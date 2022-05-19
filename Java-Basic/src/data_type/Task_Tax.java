@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class Task_Tax {
     public static void main(String[] args) {
+
         int earnings = 0;
         int spendings = 0;
         int start = 1;
@@ -12,9 +13,11 @@ public class Task_Tax {
                     "1 => Add new income \n" +  //доход
                     "2 => Add new expense \n" + //расход
                     "3 => Choose a taxation system \n" + //налог
-                    "0 => end"); //system stopped
+                    "4 => end"); //system stopped
             Scanner scanner = new Scanner(System.in);
             int step = scanner.nextInt();
+            if (step == 4) break;
+
             switch (step) {
                 case 1:
                     System.out.print("Add new income: ");
@@ -22,12 +25,14 @@ public class Task_Tax {
                     earnings += money;
                     System.out.print("Your all income: " + earnings + "\n\n");
                     continue;
+
                 case 2:
                     System.out.print("Add expense: ");
                     int spendMoney = scanner.nextInt();
                     spendings += spendMoney;
                     System.out.println("Your all expense: " + spendings + "\n");
                     continue;
+
                 case 3:
                     System.out.println("The tax overall");
                     int taxEarning = taxEarning(earnings);
@@ -39,10 +44,9 @@ public class Task_Tax {
                     earnings = 0;
                     spendings = 0;
                     continue;
-            }
-            int stop = scanner.nextInt();
-            if (stop == 0) {
-                break;
+
+                default:
+                    break;
             }
         }
     }
