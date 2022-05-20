@@ -1,4 +1,4 @@
-package access_modifiers;
+package access_modifiers.book_status;
 
 import java.util.Objects;
 
