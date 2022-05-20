@@ -1,15 +1,15 @@
-package access_modifiers.status_service;
+package access_modifiers.book_status.status_service;
 
-import access_modifiers.Book;
-import access_modifiers.BookMover;
-import access_modifiers.StatusEnum;
+import access_modifiers.book_status.Book;
+import access_modifiers.book_status.BookMover;
+import access_modifiers.book_status.StatusEnum;
 
-public class OverduedStatus extends BookMover {
+public class BorrowedStatus extends BookMover {
 
     @Override
     public void moveStatus(Book book, StatusEnum statusEnum) {
-        if (book.getStatus() == StatusEnum.OVERDUED) {
-            if (statusEnum == StatusEnum.ARCHIVED || statusEnum == StatusEnum.AVAILABLE) {
+        if (book.getStatus() == StatusEnum.BORROWED) {
+            if (statusEnum == StatusEnum.OVERDUED || statusEnum == StatusEnum.ARCHIVED || statusEnum == StatusEnum.AVAILABLE) {
                 super.moveStatus(book, statusEnum);
                 System.out.print("Book status " + statusEnum+"\n");
             } else {

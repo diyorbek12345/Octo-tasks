@@ -1,9 +1,9 @@
-package access_modifiers;
+package access_modifiers.book_status;
 
-import access_modifiers.status_service.ArchievedStatus;
-import access_modifiers.status_service.AvailableStatus;
-import access_modifiers.status_service.BorrowedStatus;
-import access_modifiers.status_service.OverduedStatus;
+import access_modifiers.book_status.status_service.ArchievedStatus;
+import access_modifiers.book_status.status_service.AvailableStatus;
+import access_modifiers.book_status.status_service.BorrowedStatus;
+import access_modifiers.book_status.status_service.OverduedStatus;
 
 import java.util.Scanner;
 

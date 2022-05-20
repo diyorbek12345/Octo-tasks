@@ -1,8 +1,8 @@
-package access_modifiers.status_service;
+package access_modifiers.book_status.status_service;
 
-import access_modifiers.Book;
-import access_modifiers.BookMover;
-import access_modifiers.StatusEnum;
+import access_modifiers.book_status.Book;
+import access_modifiers.book_status.BookMover;
+import access_modifiers.book_status.StatusEnum;
 
 public class AvailableStatus extends BookMover {
 
