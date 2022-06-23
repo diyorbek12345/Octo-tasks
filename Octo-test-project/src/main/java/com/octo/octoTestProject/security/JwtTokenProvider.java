@@ -1,9 +1,7 @@
 package com.octo.octoTestProject.security;
 
 import com.octo.octoTestProject.model.domain.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,9 +22,8 @@ public class JwtTokenProvider {
     public String generateToken(User user) {
         Date durationTimeLife = new Date(new Date().getTime() + jwtExpirationInMs);
         return Jwts.builder()
-                .setSubject(String.valueOf(user.getId()))
+                .setSubject(user.getEmail())
                 .claim("roles", user.getRoles())
-                .claim("phoneNumber", user.getPhoneNumber())
                 .claim("email", user.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(durationTimeLife)
@@ -52,8 +49,17 @@ public class JwtTokenProvider {
         try {
             Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
             return true;
-        } catch (Exception e) {
-            return false;
+        } catch (SignatureException ex) {
+            log.error("Invalid JWT signature");
+        } catch (MalformedJwtException ex) {
+            log.error("Invalid JWT token");
+        } catch (ExpiredJwtException ex) {
+            log.error("Expired JWT token");
+        } catch (UnsupportedJwtException ex) {
+            log.error("Unsupported JWT token");
+        } catch (IllegalArgumentException ex) {
+            log.error("JWT claims string is empty.");
         }
+        return false;
     }
 }

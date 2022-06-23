@@ -41,6 +41,7 @@ public class DataLoader implements CommandLineRunner {
                             "Admin",
                             "Admin@gmail.com",
                             "+998901234567",
+                            passwordEncoder.encode("root123"),
                             new HashSet<>(roleRepo.findAllByRoleName(RoleName.ROLE_ADMIN)),
                             true
                     )
@@ -51,6 +52,7 @@ public class DataLoader implements CommandLineRunner {
                             "User",
                             "user@gmail.com",
                             "+998912345678",
+                            passwordEncoder.encode("root123"),
                             new HashSet<>(roleRepo.findAllByRoleName(RoleName.ROLE_USER)),
                             true
                     )

@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.lang.module.ResolutionException;
+import java.util.UUID;
+
 @Service
 @Slf4j
 public class AuthService implements UserDetailsService {
@@ -26,9 +29,13 @@ public class AuthService implements UserDetailsService {
     @Autowired
     RoleRepository roleRepository;
 
+    public UserDetails getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ResolutionException("getUser"));
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("Don't found"));
+        return userRepository.findByPhoneNumberOrEmail(username, username).orElseThrow(() -> new UsernameNotFoundException("Don't found"));
     }
 
     /**
@@ -39,7 +46,7 @@ public class AuthService implements UserDetailsService {
             User savedUser = userRepository.save(makeUser(userDto, false));
             log.info("success: {}", savedUser);
             return savedUser;
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return new User();
         }
@@ -50,8 +57,9 @@ public class AuthService implements UserDetailsService {
      */
     public User makeUser(UserDto userDto, boolean admin) {
         User user = userDto.map2Entity();
-        user.setEmail(passwordEncoder.encode(userDto.getEmail()));
-        user.setPhoneNumber(passwordEncoder.encode(userDto.getPhoneNumber()));
+        user.setEmail(userDto.getEmail());
+        user.setPhoneNumber(userDto.getPhoneNumber());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRoles(roleRepository.findAllByRoleName(!admin ? RoleName.ROLE_USER : RoleName.ROLE_ADMIN));
         user.setEnabled(true);
         return user;

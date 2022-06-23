@@ -4,6 +4,7 @@ import com.octo.octoTestProject.model.domain.Task;
 import com.octo.octoTestProject.model.domain.User;
 import com.octo.octoTestProject.model.dto.ApiResponse;
 import com.octo.octoTestProject.model.dto.TaskDto;
+import com.octo.octoTestProject.model.vm.TaskPageable;
 import com.octo.octoTestProject.repository.TaskRepository;
 import com.octo.octoTestProject.repository.UserRepository;
 import com.octo.octoTestProject.service.TaskService;
@@ -16,12 +17,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.lang.module.ResolutionException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional
 public class TaskServiceImpl implements TaskService {
 
     @Autowired
@@ -43,9 +49,8 @@ public class TaskServiceImpl implements TaskService {
                 log.error("This time is invalid: {}", checkTime);
                 return new ApiResponse(HttpStatus.BAD_REQUEST.value(), "Time is past");
             }
-            taskDto.map2Entity().setUser(userRepo.findById(taskDto.getUserId()).orElseThrow(() -> new ResolutionException("getUserID")));
             log.info("Success");
-            return new ApiResponse(HttpStatus.CREATED.value(), taskRepo.save(taskDto.map2Entity()));
+            return new ApiResponse(HttpStatus.CREATED.value(), taskRepo.save(makeTask(taskDto)));
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return new ApiResponse(HttpStatus.CONFLICT.value(), "Save Error");
@@ -90,10 +95,65 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ApiResponse getTaskList(int page, int size, String sort, User user) {
+    public ApiResponse getTaskList(int page, int size, String sort, boolean active, User user) {
         try {
+            TaskPageable taskPageable = new TaskPageable();
+            Page<Task> tasks = taskRepo.findAllByUserIdAndActive(user.getId(), active, PageRequest.of(page, size, Sort.by(sort).descending()));
+            taskPageable.setPageable(tasks.getPageable());
+            taskPageable.setEmpty(tasks.isEmpty());
+            taskPageable.setSort(tasks.getSort());
+            taskPageable.setFirst(tasks.isFirst());
+            taskPageable.setLast(tasks.isLast());
+            taskPageable.setNumber(tasks.getNumber());
+            taskPageable.setSize(tasks.getSize());
+            taskPageable.setTotalElements(tasks.getTotalElements());
+            taskPageable.setTotalPages(tasks.getTotalPages());
+            taskPageable.setNumberOfElements(tasks.getNumberOfElements());
+            taskPageable.setContent(
+                    tasks.stream()
+                            .map(info -> new TaskDto(
+                                    info.getId(),
+                                    info.getTitle(),
+                                    info.getText(),
+                                    new SimpleDateFormat(format).format(info.getDeadline()),
+                                    info.getUser().getId(),
+                                    info.isActive()
+                            )).collect(Collectors.toList()));
             log.info("OK");
-            return new ApiResponse(HttpStatus.OK.value(), "OK", taskRepo.findAllByUserId(user.getId(), PageRequest.of(page, size, Sort.by(sort).descending())));
+            return new ApiResponse(HttpStatus.OK.value(), "OK", taskPageable);
+        } catch (Exception e) {
+            log.error("Error: {}", e.getMessage());
+            return new ApiResponse(HttpStatus.NOT_FOUND.value(), "Error");
+        }
+    }
+
+    @Override
+    public ApiResponse getTaskListForAdmin(int page, int size, String sort) {
+        try {
+            TaskPageable taskPageable = new TaskPageable();
+            Page<Task> tasks = taskRepo.findAll(PageRequest.of(page, size, Sort.by(sort).descending()));
+            taskPageable.setPageable(tasks.getPageable());
+            taskPageable.setEmpty(tasks.isEmpty());
+            taskPageable.setSort(tasks.getSort());
+            taskPageable.setFirst(tasks.isFirst());
+            taskPageable.setLast(tasks.isLast());
+            taskPageable.setNumber(tasks.getNumber());
+            taskPageable.setSize(tasks.getSize());
+            taskPageable.setTotalElements(tasks.getTotalElements());
+            taskPageable.setTotalPages(tasks.getTotalPages());
+            taskPageable.setNumberOfElements(tasks.getNumberOfElements());
+            taskPageable.setContent(
+                    tasks.stream()
+                            .map(info -> new TaskDto(
+                                    info.getId(),
+                                    info.getTitle(),
+                                    info.getText(),
+                                    new SimpleDateFormat(format).format(info.getDeadline()),
+                                    info.getUser().getId(),
+                                    info.isActive()
+                            )).collect(Collectors.toList()));
+            log.info("OK");
+            return new ApiResponse(HttpStatus.OK.value(), "OK", taskPageable);
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return new ApiResponse(HttpStatus.NOT_FOUND.value(), "Error");
@@ -110,6 +170,15 @@ public class TaskServiceImpl implements TaskService {
             log.error("Error: {}", e.getMessage());
             return new ApiResponse(HttpStatus.NOT_FOUND.value(), "Task not found");
         }
+    }
 
+    public Task makeTask(TaskDto dto) throws ParseException {
+        Task task = new Task();
+        task.setTitle(dto.getTitle());
+        task.setText(dto.getText());
+        task.setDeadline(new SimpleDateFormat(format).parse(dto.getDeadline()));
+        task.setActive(true);
+        task.setUser(userRepo.findById(dto.getUserId()).orElseThrow(() -> new ResolutionException("getUserID")));
+        return task;
     }
 }

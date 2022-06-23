@@ -41,11 +41,10 @@ public class AuthController {
      */
     @PostMapping("/login")
     public HttpEntity<?> login(@RequestBody @Valid ReqSignIn request) {
-//        Authentication authentication = authenticationManager.authenticate(new
-//                UsernamePasswordAuthenticationToken(request.getEmail(), request.getPhoneNumber()));
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = authService.loadUserByUsername(request.getEmail());
-        String token = jwtTokenProvider.generateToken(userDetails.getUsername());
+        Authentication authentication = authenticationManager.authenticate(new
+                UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String token = jwtTokenProvider.generateToken(((User) authentication.getPrincipal()));
         return ResponseEntity.ok(new JwtToken(token));
     }
 

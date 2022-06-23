@@ -23,7 +23,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtTokenProvider tokenProvider;
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) {
@@ -42,16 +41,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
                 }
             } catch (Exception ex) {
                 log.error("Could not set user authentication in security context: {}", ex.getMessage());
             }
-
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         } catch (Exception e) {
-            log.error("token error ", e);
+            log.error("token error: {}", e.getMessage());
         }
 
     }

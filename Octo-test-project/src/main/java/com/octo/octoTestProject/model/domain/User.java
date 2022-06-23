@@ -28,6 +28,8 @@ public class User extends BaseEntity implements UserDetails {
     @Column(unique = true)
     private String phoneNumber, email;
 
+    private String password;
+
     //Role
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -51,12 +53,12 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.email;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return this.phoneNumber;
+        return this.email;
     }
 
     @Override
@@ -89,10 +91,11 @@ public class User extends BaseEntity implements UserDetails {
         return userDto;
     }
 
-    public User(String fullName, String email, String phoneNumber, Set<Role> roles, boolean enabled) {
+    public User(String fullName, String email, String phoneNumber, String password, Set<Role> roles, boolean enabled) {
         this.fullName = fullName;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.password = password;
         this.roles = roles;
         this.enabled = enabled;
     }

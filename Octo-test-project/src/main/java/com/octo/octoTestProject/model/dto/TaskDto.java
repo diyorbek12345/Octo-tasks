@@ -22,9 +22,6 @@ import java.text.SimpleDateFormat;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TaskDto {
 
-    @Autowired
-    UserRepository userRepo;
-
     private Long id;
 
     @NotBlank
@@ -34,12 +31,5 @@ public class TaskDto {
 
     private Long userId;
 
-    public Task map2Entity() throws ParseException {
-        Task task = new Task();
-        task.setTitle(this.getTitle());
-        task.setText(this.getText());
-        task.setDeadline(new SimpleDateFormat("yyyy.MM.dd HH:mm").parse(this.getDeadline()));
-//        task.setUser(userRepo.findById(this.getUserId()).orElseThrow(() -> new ResolutionException("getUserID")));
-        return task;
-    }
+    private boolean active;
 }
