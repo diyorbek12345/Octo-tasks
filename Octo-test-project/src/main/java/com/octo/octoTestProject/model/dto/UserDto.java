@@ -19,15 +19,15 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto implements Serializable {
 
     private Long id;
 
+    @NotBlank
     private String fullName;
 
     @NotBlank
-    @Pattern(regexp = "^[+][9][9][8][0-9]{9}$", message = "Phone number is invalid")
+    @Pattern(regexp = "^[+][9][9][8][0-9]{9}$", message = "Phone number is invalid, You should type +998991234567")
     @ApiModelProperty(notes = "phone number ", name = "phoneNumber", required = true, value = "+998912345678")
     private String phoneNumber;
 
@@ -36,13 +36,8 @@ public class UserDto implements Serializable {
     private String email;
 
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$", message = "Minimum six characters, at least one letter and one number")
+    @NotBlank
     private String password;
 
     private Set<Role> roles;
-
-    public User map2Entity() {
-        User user = new User();
-        user.setFullName(this.getFullName());
-        return user;
-    }
 }

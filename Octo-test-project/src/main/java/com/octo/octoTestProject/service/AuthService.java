@@ -1,12 +1,14 @@
 package com.octo.octoTestProject.service;
 
 import com.octo.octoTestProject.model.domain.User;
+import com.octo.octoTestProject.model.dto.ApiResponse;
 import com.octo.octoTestProject.model.dto.UserDto;
 import com.octo.octoTestProject.model.enums.RoleName;
 import com.octo.octoTestProject.repository.RoleRepository;
 import com.octo.octoTestProject.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,14 +43,20 @@ public class AuthService implements UserDetailsService {
     /**
      * This method register User
      */
-    public User registerUser(UserDto userDto) {
+    public ApiResponse registerUser(UserDto userDto) {
         try {
+            if (userRepository.existsByEmail(userDto.getEmail())){
+                return new ApiResponse("Email exist", HttpStatus.CONFLICT.value());
+            }
+            if (userRepository.existsByPhoneNumber(userDto.getPhoneNumber())){
+                return new ApiResponse("Phone Number exist", HttpStatus.CONFLICT.value());
+            }
             User savedUser = userRepository.save(makeUser(userDto, false));
             log.info("success: {}", savedUser);
-            return savedUser;
+            return new ApiResponse(HttpStatus.CREATED.value(), "Successfully register", savedUser);
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
-            return new User();
+            return new ApiResponse(HttpStatus.BAD_REQUEST.value(), "Error saving", e.getMessage());
         }
     }
 
@@ -56,7 +64,7 @@ public class AuthService implements UserDetailsService {
      * This method to help making User
      */
     public User makeUser(UserDto userDto, boolean admin) {
-        User user = userDto.map2Entity();
+        User user = new User();
         user.setEmail(userDto.getEmail());
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
