@@ -21,7 +21,6 @@ public class OctoTestProjectApplication {
         SpringApplication.run(OctoTestProjectApplication.class, args);
     }
 
-    //the top of every hour of every day
     @Scheduled(cron = "0 0/30 * * * *")
     public void changeActive() {
         for (Task task : taskRepo.findAll()) {
@@ -31,5 +30,4 @@ public class OctoTestProjectApplication {
             }
         }
     }
-
 }
