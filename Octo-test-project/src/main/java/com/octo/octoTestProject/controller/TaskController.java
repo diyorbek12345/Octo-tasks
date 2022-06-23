@@ -3,12 +3,15 @@ package com.octo.octoTestProject.controller;
 import com.octo.octoTestProject.model.domain.User;
 import com.octo.octoTestProject.model.dto.ApiResponse;
 import com.octo.octoTestProject.model.dto.TaskDto;
+import com.octo.octoTestProject.model.vm.ErrorsField;
 import com.octo.octoTestProject.security.CurrentUser;
 import com.octo.octoTestProject.service.impl.TaskServiceImpl;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,14 +26,32 @@ public class TaskController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @PostMapping
-    public ApiResponse saveTask(@RequestBody @Valid TaskDto taskDto) {
+    public ApiResponse saveTask(@Valid @RequestBody TaskDto taskDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ApiResponse(HttpStatus.BAD_REQUEST.value(),
+                    "Error",
+                    bindingResult.getFieldErrors()
+                            .stream()
+                            .map(fieldError -> new ErrorsField(fieldError.getField(),
+                                    fieldError.getDefaultMessage(),
+                                    fieldError.getCode())));
+        }
         return taskService.saveTask(taskDto);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @PutMapping("/{id}")
-    public ApiResponse editTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDto) {
+    public ApiResponse editTask(@Valid @PathVariable Long id, @RequestBody TaskDto taskDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ApiResponse(HttpStatus.BAD_REQUEST.value(),
+                    "Error",
+                    bindingResult.getFieldErrors()
+                            .stream()
+                            .map(fieldError -> new ErrorsField(fieldError.getField(),
+                                    fieldError.getDefaultMessage(),
+                                    fieldError.getCode())));
+        }
         return taskService.editTask(id, taskDto);
     }
 

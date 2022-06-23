@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.lang.module.ResolutionException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -20,7 +21,7 @@ import java.text.SimpleDateFormat;
 @NoArgsConstructor
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TaskDto {
+public class TaskDto implements Serializable {
 
     private Long id;
 
