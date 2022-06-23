@@ -50,7 +50,8 @@ public class TaskServiceImpl implements TaskService {
                 return new ApiResponse(HttpStatus.BAD_REQUEST.value(), "Time is past");
             }
             log.info("Success");
-            return new ApiResponse(HttpStatus.CREATED.value(), taskRepo.save(makeTask(taskDto)));
+            taskRepo.save(makeTask(taskDto));
+            return new ApiResponse(HttpStatus.CREATED.value(), "Successfully created");
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return new ApiResponse(HttpStatus.CONFLICT.value(), "Save Error");
@@ -76,7 +77,8 @@ public class TaskServiceImpl implements TaskService {
             task.setDeadline(new SimpleDateFormat(format).parse(taskDto.getDeadline()));
             task.setUser(userRepo.findById(taskDto.getUserId()).orElseThrow(() -> new ResolutionException("getUserID")));
             task.setActive(taskDto.isActive());
-            return new ApiResponse(HttpStatus.CREATED.value(), taskRepo.save(task));
+            taskRepo.save(task);
+            return new ApiResponse(HttpStatus.CREATED.value(), "Successfully edited");
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return new ApiResponse(HttpStatus.BAD_REQUEST.value(), "Edit Error");

@@ -53,7 +53,7 @@ public class AuthService implements UserDetailsService {
             }
             User savedUser = userRepository.save(makeUser(userDto, false));
             log.info("success: {}", savedUser);
-            return new ApiResponse(HttpStatus.CREATED.value(), "Successfully register", savedUser);
+            return new ApiResponse(HttpStatus.CREATED.value(), "Successfully register");
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
             return new ApiResponse(HttpStatus.BAD_REQUEST.value(), "Error saving", e.getMessage());
@@ -66,6 +66,7 @@ public class AuthService implements UserDetailsService {
     public User makeUser(UserDto userDto, boolean admin) {
         User user = new User();
         user.setEmail(userDto.getEmail());
+        user.setFullName(userDto.getFullName());
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRoles(roleRepository.findAllByRoleName(!admin ? RoleName.ROLE_USER : RoleName.ROLE_ADMIN));

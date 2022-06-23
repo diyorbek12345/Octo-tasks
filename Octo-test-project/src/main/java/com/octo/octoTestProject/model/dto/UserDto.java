@@ -1,5 +1,6 @@
 package com.octo.octoTestProject.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.octo.octoTestProject.model.domain.Role;
 import com.octo.octoTestProject.model.domain.User;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto implements Serializable {
 
     private Long id;
