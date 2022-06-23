@@ -75,6 +75,7 @@ public class TaskServiceImpl implements TaskService {
             task.setText(taskDto.getText());
             task.setDeadline(new SimpleDateFormat(format).parse(taskDto.getDeadline()));
             task.setUser(userRepo.findById(taskDto.getUserId()).orElseThrow(() -> new ResolutionException("getUserID")));
+            task.setActive(taskDto.isActive());
             return new ApiResponse(HttpStatus.CREATED.value(), taskRepo.save(task));
         } catch (Exception e) {
             log.error("Error: {}", e.getMessage());
