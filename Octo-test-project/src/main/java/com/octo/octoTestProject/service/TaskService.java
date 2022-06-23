@@ -12,7 +12,9 @@ public interface TaskService {
 
     ApiResponse getTask(Long id,User user);
 
-    ApiResponse getTaskList(int page, int size, String sort, User user);
+    ApiResponse getTaskList(int page, int size, String sort, boolean active, User user);
+
+    ApiResponse getTaskListForAdmin(int page, int size, String sort);
 
     ApiResponse deleteTask(Long id, User user);
 }

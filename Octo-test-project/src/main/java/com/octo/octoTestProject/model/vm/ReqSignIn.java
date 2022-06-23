@@ -12,6 +12,12 @@ import javax.validation.constraints.Pattern;
 @Setter
 public class ReqSignIn {
 
-    private String email;
+    @NotBlank(message = "empty")
+    @ApiModelProperty(notes = "phone number or email ", name = "username", required = true, value = "+998912345678 or qwerty@gmail.com")
+    private String username;
+
+    @NotBlank(message = "password is empty")
+    @ApiModelProperty(notes = "password", name = "password", required = true, value = "Qwerty123")
+    private String password;
 
 }

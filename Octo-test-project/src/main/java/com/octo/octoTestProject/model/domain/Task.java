@@ -30,13 +30,5 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public TaskDto map2DTO(){
-        TaskDto taskDto = new TaskDto();
-        taskDto.setId(this.getId());
-        taskDto.setTitle(this.getTitle());
-        taskDto.setText(this.getText());
-        taskDto.setDeadline(String.valueOf(this.getDeadline()));
-        taskDto.setUserId(this.getUser().getId());
-        return taskDto;
-    }
+    private boolean active;
 }

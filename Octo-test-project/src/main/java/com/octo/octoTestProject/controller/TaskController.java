@@ -20,14 +20,14 @@ public class TaskController {
     @Autowired
     TaskServiceImpl taskService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @PostMapping
     public ApiResponse saveTask(@RequestBody @Valid TaskDto taskDto) {
         return taskService.saveTask(taskDto);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @PutMapping("/{id}")
     public ApiResponse editTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDto, @CurrentUser User user) {
@@ -41,17 +41,27 @@ public class TaskController {
         return taskService.getTask(id, user);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @GetMapping
     public ApiResponse getTaskList(@RequestParam(value = "page", defaultValue = "0") int page,
                                    @RequestParam(value = "size", defaultValue = "10") int size,
                                    @RequestParam(value = "sort", defaultValue = "deadline") String sort,
+                                   @RequestParam(value = "active", defaultValue = "true") boolean active,
                                    @CurrentUser User user) {
-        return taskService.getTaskList(page, size, sort, user);
+        return taskService.getTaskList(page, size, sort, active, user);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_USER')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
+    @GetMapping("/list-for-admin")
+    public ApiResponse getTaskListForAdmin(@RequestParam(value = "page", defaultValue = "0") int page,
+                                           @RequestParam(value = "size", defaultValue = "10") int size,
+                                           @RequestParam(value = "sort", defaultValue = "deadline") String sort) {
+        return taskService.getTaskListForAdmin(page, size, sort);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @DeleteMapping("/{id}")
     public ApiResponse deleteTask(@PathVariable Long id, @CurrentUser User user) {

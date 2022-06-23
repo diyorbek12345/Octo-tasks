@@ -35,6 +35,9 @@ public class UserDto implements Serializable {
     @Email(message = "Please type your email")
     private String email;
 
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,}$", message = "Minimum six characters, at least one letter and one number")
+    private String password;
+
     private Set<Role> roles;
 
     public User map2Entity() {
