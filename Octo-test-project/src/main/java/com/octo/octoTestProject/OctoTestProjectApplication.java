@@ -21,6 +21,7 @@ public class OctoTestProjectApplication {
         SpringApplication.run(OctoTestProjectApplication.class, args);
     }
 
+    //every 30 min method working
     @Scheduled(cron = "0 0/30 * * * *")
     public void changeActive() {
         for (Task task : taskRepo.findAll()) {
