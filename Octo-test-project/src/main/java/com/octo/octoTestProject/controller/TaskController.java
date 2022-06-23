@@ -30,7 +30,7 @@ public class TaskController {
     @PreAuthorize("hasAnyAuthority('ROLE_USER', 'ROLE_ADMIN')")
     @ApiImplicitParams(@ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "Bearer access_token"))
     @PutMapping("/{id}")
-    public ApiResponse editTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDto, @CurrentUser User user) {
+    public ApiResponse editTask(@PathVariable Long id, @RequestBody @Valid TaskDto taskDto) {
         return taskService.editTask(id, taskDto);
     }
 
