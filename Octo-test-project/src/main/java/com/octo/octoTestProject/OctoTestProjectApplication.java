@@ -22,7 +22,7 @@ public class OctoTestProjectApplication {
     }
 
     //every 30 min method working
-    @Scheduled(cron = "0 0/30 * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     public void changeActive() {
         for (Task task : taskRepo.findAll()) {
             if (task.getDeadline().before(new Date())) {
